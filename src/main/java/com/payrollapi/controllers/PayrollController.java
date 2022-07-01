@@ -9,28 +9,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.payrollapi.domain.Payroll;
-import com.payrollapi.domain.User;
-import com.payrollapi.feignClients.UserFeign;
+import com.payrollapi.services.PayrollService;
 
 @RestController
 @RequestMapping("/payments")
 public class PayrollController {
 	
 	@Autowired
-	private UserFeign userFeign;
+	private PayrollService payrollService;
 	
 	@GetMapping("/{workerId}")
 	public ResponseEntity<Payroll> getPayment(@PathVariable Long workerId, @RequestBody Payroll payment){
 		
-		User user = userFeign.findById(workerId).getBody();
+		Payroll obj = payrollService.getPayment(workerId,payment);
 		
-		return ResponseEntity.ok().body(
-				new Payroll(user.getName(),
-						payment.getDescription(),
-						user.getHourlyPrice(),
-						payment.getWorkedHours(),
-						user.getHourlyPrice()*payment.getWorkedHours())
-				);
+		return ResponseEntity.ok().body(obj);
 		
 	}
 
